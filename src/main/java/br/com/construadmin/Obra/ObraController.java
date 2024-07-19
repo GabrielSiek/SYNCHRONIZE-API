@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -51,6 +53,21 @@ public class ObraController {
             return ResponseEntity.badRequest().body("Empresa ou encarregado não cadastrado no sistema");
     }
 
+    @GetMapping("/{empresa_id}/valor-total")
+    public Double getValores(@PathVariable String empresa_id) {
+        Optional<Empresa> optionalEmpresa = empresaRepository.findById(empresa_id);
+
+        if(optionalEmpresa.isPresent()) {
+            Empresa empresa = optionalEmpresa.get();
+
+
+            List<Obra> obras = new ArrayList<Obra>();
+
+            //obras.forEach();
+        }
+
+        return (double) 0;
+    }
     //read
     @GetMapping("/{obra_id}/job-info")
     public ObraDTO getObra(@PathVariable String obra_id) {

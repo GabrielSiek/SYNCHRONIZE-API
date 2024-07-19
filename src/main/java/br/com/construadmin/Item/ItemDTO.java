@@ -5,6 +5,5 @@ import br.com.construadmin.Obra.Obra;
 
 public record ItemDTO(String nome,
                       Empresa empresa,
-                      Obra obra,
-                      String valor) {
+                      Obra obra) {
 }

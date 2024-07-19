@@ -10,10 +10,8 @@ import lombok.*;
 @Table(name = "itens")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Item extends ItemDefault {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,10 +21,6 @@ public class Item extends ItemDefault {
     private String nome;
     private String sistemas;
     private int quantidade;
-
-    private ItemDefault preparacao;
-
-    private ItemDefault protecao;
 
     @ManyToOne
     private Empresa empresa;

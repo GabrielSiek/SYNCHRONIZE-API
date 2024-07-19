@@ -16,7 +16,7 @@ public class ItemService {
 
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
-            return new ItemDTO(item.getNome(), item.getEmpresa(), item.getObra(), item.getValor());
+            return new ItemDTO(item.getNome(), item.getEmpresa(), item.getObra());
         }
 
         return null;

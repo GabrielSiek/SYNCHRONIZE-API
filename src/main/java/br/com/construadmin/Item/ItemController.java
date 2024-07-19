@@ -33,7 +33,7 @@ public class ItemController {
                 Obra obra = optionalObra.get();
                 Empresa empresa = obra.getEmpresa();
 
-                Item newItem = new Item(registerItemDTO.nome(), empresa, obra, registerItemDTO.valor());
+                Item newItem = new Item(registerItemDTO.nome(), empresa, obra);
 
                 itemRepository.save(newItem);
 
@@ -72,9 +72,6 @@ public class ItemController {
 
                 if (!updateItemDTO.status().equals(item.getStatus()))
                     item.setStatus(updateItemDTO.status());
-
-                if (!updateItemDTO.valor().equals(item.getValor()))
-                    item.setValor(updateItemDTO.valor());
 
                 itemRepository.save(item);
 
