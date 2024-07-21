@@ -68,6 +68,7 @@ public class ObraController {
 
         return (double) 0;
     }
+
     //read
     @GetMapping("/{obra_id}/job-info")
     public ObraDTO getObra(@PathVariable String obra_id) {

@@ -21,6 +21,7 @@ public class Item {
     private String nome;
     private String sistemas;
     private int quantidade;
+    private Double valor;
 
     @ManyToOne
     private Empresa empresa;
@@ -31,7 +32,6 @@ public class Item {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
 
     public Item(String nome, Empresa empresa, Obra obra) {
         this.nome = nome;
