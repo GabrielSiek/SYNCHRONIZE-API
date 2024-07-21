@@ -59,15 +59,17 @@ public class ObraController {
 
         if(optionalEmpresa.isPresent()) {
             Empresa empresa = optionalEmpresa.get();
+            double[] valor = {0};
 
+            List<Obra> obras = empresa.getObras();
+            obras.forEach(o -> valor[0] += o.getValorTotal());
 
-            List<Obra> obras = new ArrayList<Obra>();
-
-            //obras.forEach();
+            return valor[0];
         }
 
         return (double) 0;
     }
+
     //read
     @GetMapping("/{obra_id}/job-info")
     public ObraDTO getObra(@PathVariable String obra_id) {

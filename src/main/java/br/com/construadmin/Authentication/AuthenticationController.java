@@ -12,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
@@ -41,7 +39,9 @@ public class AuthenticationController {
 
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        User user = userRepository.findByEmail(authenticationDTO.email());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token, user.getEmpresa().getId()));
     }
 
     //arrumar criar conta junto de empresa
@@ -63,6 +63,11 @@ public class AuthenticationController {
 
 
         return ResponseEntity.ok().body("Usuário chefe cadastrado com sucesso!");
+    }
+
+    @GetMapping("/verify-token")
+    public ResponseEntity verifyToken() {
+        return ResponseEntity.ok().body("Usuário com token válido");
     }
 
 

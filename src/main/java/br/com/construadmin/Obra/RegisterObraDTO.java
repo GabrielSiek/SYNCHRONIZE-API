@@ -4,5 +4,5 @@ import br.com.construadmin.Item.Item;
 
 public record RegisterObraDTO(String nome,
                               String encarregado_id,
-                              Item[] items) {
+                              String empresa_id) {
 }

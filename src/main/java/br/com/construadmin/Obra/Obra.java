@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "obras")
@@ -24,6 +25,8 @@ public class Obra {
     private String id;
 
     private String nome;
+
+    private Double valorTotal;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -43,6 +46,14 @@ public class Obra {
         this.empresa = empresa;
         this.encarregado = encarregado;
         status = Status.NAO_CONCLUIDO;
+        this.valorTotal = 0.0;
+        itens = new ArrayList<>();
+    }
+
+    public Double getValorTotal() {
+        return itens.stream()
+                .mapToDouble(Item::getValor)
+                .sum();
     }
 }
 

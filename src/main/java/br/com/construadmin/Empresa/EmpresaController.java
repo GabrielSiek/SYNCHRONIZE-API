@@ -1,6 +1,9 @@
 package br.com.construadmin.Empresa;
 
 import br.com.construadmin.Infra.Security.TokenService;
+import br.com.construadmin.Obra.InfosObraDTO;
+import br.com.construadmin.Obra.Obra;
+import br.com.construadmin.User.InfoUserDTO;
 import br.com.construadmin.User.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -51,6 +56,28 @@ public class EmpresaController {
     @GetMapping("/{empresa_id}/company-info")
     public EmpresaDTO getEmpresa(@PathVariable String empresa_id) {
         return empresaService.obterPorId(empresa_id);
+    }
+
+    //read
+    @GetMapping("/{empresa_id}/jobs-info")
+    public List<InfosObraDTO> getObrasInfo(@PathVariable String empresa_id) {
+        Optional<Empresa> optionalEmpresa = empresaRepository.findById(empresa_id);
+
+        if(optionalEmpresa.isPresent()) {
+            Empresa empresa = optionalEmpresa.get();
+            List<Obra> obras = empresa.getObras();
+            List<InfosObraDTO> obrasInfo = new ArrayList<>();
+
+            obras.forEach(o -> {
+                InfoUserDTO encarregado = new InfoUserDTO(o.getEncarregado().getNome(), o.getEncarregado().getId());
+                obrasInfo.add(new InfosObraDTO(o.getNome(), o.getValorTotal(), encarregado, o.getItens().size(), o.getStatus()));
+                    }
+            );
+
+            return obrasInfo;
+        }
+
+        return null;
     }
 
     //update
