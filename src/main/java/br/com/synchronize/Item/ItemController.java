@@ -26,27 +26,27 @@ public class ItemController {
 
     //arrumado e vai ser usado
     //create
-    @PostMapping("/{obra_id}/register-item")
-    public ResponseEntity registerItem(@PathVariable String obra_id, @RequestBody @Valid RegisterItemDTO registerItemDTO) {
-        Optional<Obra> optionalObra = obraRepository.findById(obra_id);
-
-        if (optionalObra.isPresent()) {
-            try {
-                Obra obra = optionalObra.get();
-                Empresa empresa = obra.getEmpresa();
-
-                Item newItem = new Item(registerItemDTO.nome(), empresa, obra);
-
-                itemRepository.save(newItem);
-
-                return ResponseEntity.ok().body("Item cadastrado com sucesso!");
-            } catch (Exception ex) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar item: " + ex);
-            }
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Obra não cadastrada no sistema com id: " + obra_id);
-    }
+//    @PostMapping("/{obra_id}/register-item")
+//    public ResponseEntity registerItem(@PathVariable String obra_id, @RequestBody @Valid RegisterItemDTO registerItemDTO) {
+//        Optional<Obra> optionalObra = obraRepository.findById(obra_id);
+//
+//        if (optionalObra.isPresent()) {
+//            try {
+//                Obra obra = optionalObra.get();
+//                Empresa empresa = obra.getEmpresa();
+//
+//                Item newItem = new Item(registerItemDTO.nome(), empresa, obra);
+//
+//                itemRepository.save(newItem);
+//
+//                return ResponseEntity.ok().body("Item cadastrado com sucesso!");
+//            } catch (Exception ex) {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar item: " + ex);
+//            }
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Obra não cadastrada no sistema com id: " + obra_id);
+//    }
 
     //arrumado e deve ser udado
     //read

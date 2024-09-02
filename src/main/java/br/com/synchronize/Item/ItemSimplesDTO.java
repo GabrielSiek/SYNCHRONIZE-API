@@ -17,6 +17,9 @@ public record ItemSimplesDTO(Integer id,
                              Double protecao_desenvolvimento_porcentagem,
                              Double desenvolvimento_area,
                              Double desenvolvimento_porcentagem,
+                             String data_inicio,
+                             String data_ultima,
+                             String data_final,
                              Status status
                              ) {
 }

@@ -41,6 +41,9 @@ public class ItemService {
                     item.getProtecaoDesenvolvimentoPorcentagem(),
                     item.getDesenvolvimentoArea(),
                     item.getDesenvolvimentoPorcentagem(),
+                    item.getDataInicio(),
+                    item.getDataUltima(),
+                    item.getDataFinal(),
                     item.getStatus());
         }
 

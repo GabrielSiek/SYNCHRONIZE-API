@@ -2,10 +2,14 @@ package br.com.synchronize.Item;
 
 import br.com.synchronize.Categorias.Status;
 import br.com.synchronize.Empresa.Empresa;
+import br.com.synchronize.ItemRelatorio.ItemRelatorio;
 import br.com.synchronize.Obra.Obra;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity(name = "itens")
 @Table(name = "itens")
@@ -77,21 +81,31 @@ public class Item {
     @JsonProperty("desenvolvimento_porcentagem")
     private Double desenvolvimentoPorcentagem;
 
+    @JsonProperty("data_inicio")
+    private String dataInicio;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ItemRelatorio> datas;
+
+    @JsonProperty("data_final")
+    private String dataFinal;
+
     @ManyToOne
     private Empresa empresa;
+
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "obra_id")
     private Obra obra;
 
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Item(String nome, Empresa empresa, Obra obra) {
-        this.nome = nome;
-        this.empresa = empresa;
-        this.obra = obra;
-        status = Status.NAO_CONCLUIDO;
+    public String getDataUltima() {
+        return datas.get(datas.size() -1).getData();
     }
 
     @Override

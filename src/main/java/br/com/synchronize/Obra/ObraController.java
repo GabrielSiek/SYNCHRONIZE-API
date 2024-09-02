@@ -4,6 +4,8 @@ import br.com.synchronize.Categorias.Status;
 import br.com.synchronize.Empresa.Empresa;
 import br.com.synchronize.Empresa.EmpresaRepository;
 import br.com.synchronize.Item.Item;
+import br.com.synchronize.ItemRelatorio.ItemRelatorio;
+import br.com.synchronize.Item.ItemRepository;
 import br.com.synchronize.User.User;
 import br.com.synchronize.User.UserRepository;
 import jakarta.validation.Valid;
@@ -14,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +38,9 @@ public class ObraController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ItemRepository itemRepository;
+
     //arrumado e usado
     //create
     @PostMapping("/register-obra")
@@ -50,7 +57,12 @@ public class ObraController {
                 Obra newObra = new Obra(registerObraDTO.nome(), empresa, encarregado);
 
                 if (!registerObraDTO.items().isEmpty()) {
+
+                    DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                    String data = LocalDateTime.now().format(formatacao);
+
                     List<Item> items = registerObraDTO.items().stream().map(itemDTO -> {
+
                         Item item = new Item();
                         // Defina os atributos do item a partir do DTO
                         item.setNumero(itemDTO.getNumero());
@@ -78,7 +90,8 @@ public class ObraController {
                         item.setProtecaoDesenvolvimentoPorcentagem(0.0);
                         item.setDesenvolvimentoArea(0.0);
                         item.setDesenvolvimentoPorcentagem(0.0);
-
+                        item.setDataInicio(data);
+                        item.getDatas().add(data);
                         item.setObra(newObra);
                         return item;
                     }).collect(Collectors.toList());
@@ -160,44 +173,71 @@ public class ObraController {
 
                 if (!updateObraDTO.status().equals(obra.getStatus())) {
                     obra.setStatus(updateObraDTO.status());
+                    if(obra.getStatus().equals(Status.CONCLUIDO)) {
+                        DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                        String data = LocalDateTime.now().format(formatacao);
+                        obra.setDataFinal(data);
+                    } else if(!obra.getDataFinal().equals(null)) {
+                        obra.setDataFinal(null);
+                    }
                 }
 
                 List<Item> novosItens = updateObraDTO.itens().stream()
-                        .map(dto -> new Item(
-                                dto.id(),
-                                dto.numero(),
-                                dto.local_de_aplicacao(),
-                                dto.nome(),
-                                dto.sistemas(),
-                                dto.tipo(),
-                                dto.quantidade(),
-                                dto.area_total(),
-                                dto.valor(),
-                                dto.valor_etapa(),
-                                dto.preparacao_tipo(),
-                                dto.preparacao_area_total(),
-                                dto.preparacao_valor(),
-                                dto.preparacao_valor_etapa(),
-                                dto.preparacao_desenvolvimento_area(),
-                                dto.preparacao_desenvolvimento_porcentagem(),
-                                dto.protecao_tipo(),
-                                dto.protecao_area_total(),
-                                dto.protecao_valor(),
-                                dto.protecao_valor_etapa(),
-                                dto.protecao_desenvolvimento_area(),
-                                dto.protecao_desenvolvimento_porcentagem(),
-                                dto.desenvolvimento_area(),
-                                dto.desenvolvimento_porcentagem(),
-                                obra.getEmpresa(),
-                                obra,
-                                dto.status()
-                        ))
+                        .map(dto -> {
+                            Optional<Item> itemTemporario = itemRepository.findById(dto.id());
+
+                                String dataInicio = itemRepository.findById(dto.id()).get().getDataInicio();
+
+                                List<ItemRelatorio> datas = itemTemporario.get().getDatas();
+                                DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                String data = LocalDateTime.now().format(formatacao);
+                                datas.add(data);
+
+                                Item item =  new Item(
+                                        dto.id(),
+                                        dto.numero(),
+                                        dto.local_de_aplicacao(),
+                                        dto.nome(),
+                                        dto.sistemas(),
+                                        dto.tipo(),
+                                        dto.quantidade(),
+                                        dto.area_total(),
+                                        dto.valor(),
+                                        dto.valor_etapa(),
+                                        dto.preparacao_tipo(),
+                                        dto.preparacao_area_total(),
+                                        dto.preparacao_valor(),
+                                        dto.preparacao_valor_etapa(),
+                                        dto.preparacao_desenvolvimento_area(),
+                                        dto.preparacao_desenvolvimento_porcentagem(),
+                                        dto.protecao_tipo(),
+                                        dto.protecao_area_total(),
+                                        dto.protecao_valor(),
+                                        dto.protecao_valor_etapa(),
+                                        dto.protecao_desenvolvimento_area(),
+                                        dto.protecao_desenvolvimento_porcentagem(),
+                                        dto.desenvolvimento_area(),
+                                        dto.desenvolvimento_porcentagem(),
+                                        dataInicio,
+                                        datas,
+                                        null,
+                                        obra.getEmpresa(),
+                                        obra,
+                                        dto.status()
+                                );
+
+                                if(dto.status().equals(Status.CONCLUIDO))
+                                    item.setDataFinal(data);
+                                else if(item.getStatus().equals(Status.CONCLUIDO))
+                                    item.setStatus(Status.NAO_CONCLUIDO);
+
+                                return item;
+                        })
                         .collect(Collectors.toList());
 
                     obra.setItens(novosItens);
 
-                    obraRepository.save(obra); // Salva a obra e os itens relacionados
-
+                    obraRepository.save(obra);
 
                 return ResponseEntity.ok().body("Dados da obra atualizados com sucesso!");
             } catch (Exception ex) {
@@ -207,7 +247,6 @@ public class ObraController {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de obra ou de encarregado não encontrado");
     }
-
 
     //arrumado e vai ser usado
     //delete
