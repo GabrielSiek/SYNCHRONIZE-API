@@ -151,6 +151,9 @@ public class EmpresaController {
                                                 item.getProtecaoDesenvolvimentoPorcentagem(),
                                                 item.getDesenvolvimentoPorcentagem(),
                                                 item.getDesenvolvimentoArea(),
+                                                item.getDataInicio(),
+                                                item.getDataUltima(),
+                                                item.getDataFinal(),
                                                 item.getStatus()
                                         )))
                                 .collect(Collectors.toList());
@@ -174,6 +177,9 @@ public class EmpresaController {
                                                 item.getProtecaoDesenvolvimentoPorcentagem(),
                                                 item.getDesenvolvimentoPorcentagem(),
                                                 item.getDesenvolvimentoArea(),
+                                                item.getDataInicio(),
+                                                item.getDataUltima(),
+                                                item.getDataFinal(),
                                                 item.getStatus()
                                         )))
                                 .collect(Collectors.toList());
@@ -279,4 +285,23 @@ public class EmpresaController {
 //
 //        return ResponseEntity.badRequest().body("Empresa não encontrada para o ID: " + empresa_id);
 //    }
+
+    //arrumado e vai ser usado
+    @GetMapping("/{empresa_id}/valor-total")
+    public Double getValores(@PathVariable String empresa_id) {
+        Optional<Empresa> optionalEmpresa = empresaRepository.findById(empresa_id);
+
+        if(optionalEmpresa.isPresent()) {
+            Empresa empresa = optionalEmpresa.get();
+            double[] valor = {0};
+
+            List<Obra> obras = empresa.getObras();
+            obras.forEach(o -> valor[0] += o.getValorTotal());
+
+            return valor[0];
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa não encontrada");
+        }
+    }
+
 }

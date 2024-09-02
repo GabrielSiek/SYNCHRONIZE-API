@@ -1,5 +1,6 @@
 package br.com.synchronize.Item;
 
+import br.com.synchronize.ItemRelatorio.ItemRelatorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +42,13 @@ public class ItemService {
                     item.getProtecaoDesenvolvimentoPorcentagem(),
                     item.getDesenvolvimentoArea(),
                     item.getDesenvolvimentoPorcentagem(),
+                    item.getDataInicio(),
+                    item.getDataUltima(),
+                    item.getDataFinal(),
                     item.getStatus());
         }
 
         return null;
     }
+
 }

@@ -5,6 +5,7 @@ import br.com.synchronize.Empresa.Empresa;
 import br.com.synchronize.Item.Item;
 import br.com.synchronize.User.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,13 @@ public class Obra {
     private String nome;
 
     private Double valorTotal;
+
+    @JsonProperty("data_inicio")
+    private String dataInicio;
+
+
+    @JsonProperty("data_inicio")
+    private String dataFinal;
 
     @Enumerated(EnumType.STRING)
     private Status status;

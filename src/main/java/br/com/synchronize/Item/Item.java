@@ -2,10 +2,16 @@ package br.com.synchronize.Item;
 
 import br.com.synchronize.Categorias.Status;
 import br.com.synchronize.Empresa.Empresa;
+import br.com.synchronize.ItemRelatorio.ItemRelatorio;
 import br.com.synchronize.Obra.Obra;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Entity(name = "itens")
 @Table(name = "itens")
@@ -19,17 +25,23 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     private Integer numero;
 
     @JsonProperty("local_de_aplicacao")
     private String localDeAplicacao;
+
     private String nome;
+
     private String sistemas;
+
     private Integer tipo;
+
     private Integer quantidade;
 
     @JsonProperty("area_total")
     private Double areaTotal;
+
     private Double valor;
 
     @JsonProperty("valor_etapa")
@@ -77,6 +89,16 @@ public class Item {
     @JsonProperty("desenvolvimento_porcentagem")
     private Double desenvolvimentoPorcentagem;
 
+    @JsonProperty("data_inicio")
+    private String dataInicio;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ItemRelatorio> datas;
+
+    @JsonProperty("data_final")
+    private String dataFinal;
+
     @ManyToOne
     private Empresa empresa;
 
@@ -84,14 +106,12 @@ public class Item {
     @JoinColumn(name = "obra_id")
     private Obra obra;
 
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Item(String nome, Empresa empresa, Obra obra) {
-        this.nome = nome;
-        this.empresa = empresa;
-        this.obra = obra;
-        status = Status.NAO_CONCLUIDO;
+    public String getDataUltima() {
+        return datas.get(datas.size() -1).getData();
     }
 
     @Override
@@ -126,4 +146,49 @@ public class Item {
                 ", status=" + status +
                 '}';
     }
+
+    public void startDatas() {
+        DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String data = LocalDate.now().format(formatacao);
+        this.dataInicio = data;
+
+        ItemRelatorio itemRelatorio = new ItemRelatorio();
+        itemRelatorio.setDesenvolvimentoArea(0.0);
+        itemRelatorio.setDesenvolvimentoPorcentagem(0.0);
+        itemRelatorio.setPreparacaoDesenvolvimentoArea(0.0);
+        itemRelatorio.setPreparacaoDesenvolvimentoPorcentagem(0.0);
+        itemRelatorio.setProtecaoDesenvolvimentoArea(0.0);
+        itemRelatorio.setProtecaoDesenvolvimentoPorcentagem(0.0);
+        itemRelatorio.setData();
+
+        datas.add(itemRelatorio);
+
+        this.dataFinal = null;
+    }
+
+    public void addItemRelatorio(Double desenvolvimentoArea, Double desenvolvimentoPorcentagem, Double preparacaoDesenvolvimentoArea, Double preparacaoDesenvolvimentoPorcentagem, Double protecaoDesenvolvimentoArea, Double protecaoDesenvolvimentoPorcentagem) {
+        ItemRelatorio itemRelatorio = new ItemRelatorio();
+        itemRelatorio.setDesenvolvimentoArea(desenvolvimentoArea);
+        itemRelatorio.setDesenvolvimentoPorcentagem(desenvolvimentoPorcentagem);
+        itemRelatorio.setPreparacaoDesenvolvimentoArea(preparacaoDesenvolvimentoArea);
+        itemRelatorio.setPreparacaoDesenvolvimentoPorcentagem(preparacaoDesenvolvimentoPorcentagem);
+        itemRelatorio.setProtecaoDesenvolvimentoArea(protecaoDesenvolvimentoArea);
+        itemRelatorio.setProtecaoDesenvolvimentoPorcentagem(protecaoDesenvolvimentoPorcentagem);
+        itemRelatorio.setData();
+
+        datas.add(itemRelatorio);
+    }
+
+    public void setDataFinal() {
+
+        if(status.equals(Status.CONCLUIDO)) {
+            DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            String data = LocalDate.now().format(formatacao);
+            this.dataFinal = data;
+        } else {
+            this.dataFinal = null;
+        }
+    }
+
+
 }
