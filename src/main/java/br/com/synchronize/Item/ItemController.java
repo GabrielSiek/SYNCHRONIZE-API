@@ -2,6 +2,8 @@ package br.com.synchronize.Item;
 
 import br.com.synchronize.Categorias.Status;
 import br.com.synchronize.ItemRelatorio.ItemRelatorio;
+import br.com.synchronize.ItemRelatorio.ItemRelatorioDTO;
+import br.com.synchronize.ItemRelatorio.ItemRelatorioRepository;
 import br.com.synchronize.ItemRelatorio.ItemRelatorioService;
 import br.com.synchronize.Obra.ObraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,10 +26,7 @@ public class ItemController {
     ItemService itemService;
 
     @Autowired
-    ItemRelatorioService itemRelatorioService;
-
-    @Autowired
-    ObraRepository obraRepository;
+    ItemRelatorioRepository itemRelatorioRepository;
 
     @Autowired
     ItemRepository itemRepository;
@@ -85,29 +87,41 @@ public class ItemController {
                 item.setDesenvolvimentoArea(desenvolvimento_area);
                 item.setDesenvolvimentoPorcentagem(desenvolvimento_porcentagem);
 
-                DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                String data = LocalDate.now().format(formatacao);
+                LocalDate data = LocalDate.now();
 
                 Optional<ItemRelatorio> optionalItemRelatorio = item.getDatas().stream()
                                 .filter(itemRelatorio -> itemRelatorio.getData().equals(data))
                                         .findFirst();
 
-                //atualizando valores
                 if(optionalItemRelatorio.isPresent()){
                     ItemRelatorio itemRelatorio = optionalItemRelatorio.get();
-                    itemRelatorio.setPreparacaoDesenvolvimentoArea(updateItemValoresDTO.preparacao_desenvolvimento_area());
+                    itemRelatorio.setPreparacaoDesenvolvimentoArea(preparacao_desenvolvimento_area);
+                    itemRelatorio.setPreparacaoDesenvolvimentoPorcentagem(preparacao_desenvolvimento_porcentagem);
+                    itemRelatorio.setProtecaoDesenvolvimentoArea(protecao_desenvolvimento_area);
+                    itemRelatorio.setProtecaoDesenvolvimentoPorcentagem(protecao_desenvolvimento_porcentagem);
+                    itemRelatorio.setDesenvolvimentoArea(desenvolvimento_area);
+                    itemRelatorio.setDesenvolvimentoPorcentagem(desenvolvimento_porcentagem);
 
+                    itemRelatorioRepository.save(itemRelatorio);
                 }
                 else {
-                    item.addItemRelatorio(
-                            updateItemValoresDTO.preparacao_desenvolvimento_area(),
-                            updateItemValoresDTO.preparacao_desenvolvimento_porcentagem(),
-                            updateItemValoresDTO.protecao_desenvolvimento_area(),
-                            updateItemValoresDTO.protecao_desenvolvimento_porcentagem(),
-                            updateItemValoresDTO.desenvolvimento_area(),
-                            updateItemValoresDTO.desenvolvimento_porcentagem()
+                    ItemRelatorio itemRelatorio = item.addItemRelatorio(
+                            preparacao_desenvolvimento_area,
+                            preparacao_desenvolvimento_porcentagem,
+                            protecao_desenvolvimento_area,
+                            protecao_desenvolvimento_porcentagem,
+                            desenvolvimento_area,
+                            desenvolvimento_porcentagem
                     );
+
+                    item.setDataInicio(data);
+
+                    itemRelatorio.setItem(item);
+
+                    itemRelatorioRepository.save(itemRelatorio);
                 }
+
+                item.setStatus(status);
 
                 if (updateItemValoresDTO.status().equals(Status.CONCLUIDO))
                     item.setStatus(Status.CONCLUIDO);
@@ -116,10 +130,9 @@ public class ItemController {
 
                 item.setDataFinal();
 
-
                 itemRepository.save(item);
 
-                return ResponseEntity.ok().body("Item atualizado com sucesso");
+                return ResponseEntity.ok().body("Item atualizado com sucesso na data " + data);
             } catch (Exception ex){
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar item");
             }
@@ -128,6 +141,7 @@ public class ItemController {
     }
 
 
+    //arrumar para deletar ItemRelatorio também
     @DeleteMapping("/item/{item_id}/delete")
     public ResponseEntity deleteItem(@PathVariable String item_id) {
         Optional<Item> optionalItem = itemRepository.findById(item_id);

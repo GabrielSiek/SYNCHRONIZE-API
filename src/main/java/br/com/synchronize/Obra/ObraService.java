@@ -55,6 +55,9 @@ public class ObraService {
                                         item.getProtecaoDesenvolvimentoPorcentagem(),
                                         item.getDesenvolvimentoArea(),
                                         item.getDesenvolvimentoPorcentagem(),
+                                        item.getDataInicio(),
+                                        item.getDataUltima(),
+                                        item.getDataFinal(),
                                         item.getStatus()))
                                 .collect(Collectors.toList());
 
@@ -77,7 +80,7 @@ public class ObraService {
     }
 
 
-    public ObraDTO obterPorId(String obraId) {
+    public ObraDTO  obterPorId(String obraId) {
         Optional<Obra> optionalObra = obraRepository.findById(obraId);
 
         if (optionalObra.isPresent()) {
@@ -108,6 +111,9 @@ public class ObraService {
                             item.getProtecaoDesenvolvimentoPorcentagem(),
                             item.getDesenvolvimentoArea(),
                             item.getDesenvolvimentoPorcentagem(),
+                            item.getDataInicio(),
+                            item.getDataUltima(),
+                            item.getDataFinal(),
                             item.getStatus()))
                     .collect(Collectors.toList());
 

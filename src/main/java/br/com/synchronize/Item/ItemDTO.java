@@ -2,6 +2,8 @@ package br.com.synchronize.Item;
 
 import br.com.synchronize.Categorias.Status;
 
+import java.time.LocalDate;
+
 public record ItemDTO(String id,
                       Integer numero,
                       String local_de_aplicacao,
@@ -26,9 +28,9 @@ public record ItemDTO(String id,
                       Double protecao_desenvolvimento_porcentagem,
                       Double desenvolvimento_area,
                       Double desenvolvimento_porcentagem,
-                      String data_inicio,
-                      String data_ultima,
-                      String data_final,
+                      LocalDate data_inicio,
+                      LocalDate data_ultima,
+                      LocalDate data_final,
                       Status status
                                   ) {
 }

@@ -2,6 +2,7 @@ package br.com.synchronize.Empresa;
 
 import br.com.synchronize.Categorias.Role;
 import br.com.synchronize.Infra.Security.TokenService;
+import br.com.synchronize.Item.Item;
 import br.com.synchronize.Item.ItemSimplesDTO;
 import br.com.synchronize.Obra.ObraInfosDTO;
 import br.com.synchronize.Obra.Obra;
@@ -245,7 +246,7 @@ public class EmpresaController {
 
     //arrumado e vai ser usado
     //update
-    @PutMapping("/empresa/{empresa_id}/update")
+    @PostMapping("/empresa/{empresa_id}/update")
     public ResponseEntity updateCompanyName(@PathVariable String empresa_id, @RequestBody @Valid UpdateEmpresaDTO updateEmpresaDTO) {
         Optional<Empresa> optionalEmpresa = empresaRepository.findById(empresa_id);
 

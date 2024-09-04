@@ -4,10 +4,12 @@ import br.com.synchronize.Item.Item;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
 import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -24,7 +26,7 @@ public class ItemRelatorio {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String data;
+    private LocalDate data;
 
     @JsonProperty("preparacao_desenvolvimento_area")
     private Double preparacaoDesenvolvimentoArea;
@@ -50,8 +52,6 @@ public class ItemRelatorio {
     private Item item;
 
     public void setData() {
-        DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String data = LocalDate.now().format(formatacao);
-        this.data = data;
+        this.data = LocalDate.now();
     }
 }

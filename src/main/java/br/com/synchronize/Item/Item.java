@@ -10,7 +10,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "itens")
@@ -90,14 +91,14 @@ public class Item {
     private Double desenvolvimentoPorcentagem;
 
     @JsonProperty("data_inicio")
-    private String dataInicio;
+    private LocalDate dataInicio;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ItemRelatorio> datas;
 
     @JsonProperty("data_final")
-    private String dataFinal;
+    private LocalDate dataFinal;
 
     @ManyToOne
     private Empresa empresa;
@@ -106,13 +107,9 @@ public class Item {
     @JoinColumn(name = "obra_id")
     private Obra obra;
 
-
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public String getDataUltima() {
-        return datas.get(datas.size() -1).getData();
-    }
 
     @Override
     public String toString() {
@@ -148,9 +145,8 @@ public class Item {
     }
 
     public void startDatas() {
-        DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String data = LocalDate.now().format(formatacao);
-        this.dataInicio = data;
+
+        this.dataInicio = null;
 
         ItemRelatorio itemRelatorio = new ItemRelatorio();
         itemRelatorio.setDesenvolvimentoArea(0.0);
@@ -166,7 +162,7 @@ public class Item {
         this.dataFinal = null;
     }
 
-    public void addItemRelatorio(Double desenvolvimentoArea, Double desenvolvimentoPorcentagem, Double preparacaoDesenvolvimentoArea, Double preparacaoDesenvolvimentoPorcentagem, Double protecaoDesenvolvimentoArea, Double protecaoDesenvolvimentoPorcentagem) {
+    public ItemRelatorio addItemRelatorio(Double desenvolvimentoArea, Double desenvolvimentoPorcentagem, Double preparacaoDesenvolvimentoArea, Double preparacaoDesenvolvimentoPorcentagem, Double protecaoDesenvolvimentoArea, Double protecaoDesenvolvimentoPorcentagem) {
         ItemRelatorio itemRelatorio = new ItemRelatorio();
         itemRelatorio.setDesenvolvimentoArea(desenvolvimentoArea);
         itemRelatorio.setDesenvolvimentoPorcentagem(desenvolvimentoPorcentagem);
@@ -177,18 +173,23 @@ public class Item {
         itemRelatorio.setData();
 
         datas.add(itemRelatorio);
+
+        return itemRelatorio;
     }
 
-    public void setDataFinal() {
 
+    public void setDataFinal() {
         if(status.equals(Status.CONCLUIDO)) {
-            DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String data = LocalDate.now().format(formatacao);
-            this.dataFinal = data;
+            this.dataFinal = LocalDate.now();;
         } else {
             this.dataFinal = null;
         }
     }
 
+    public LocalDate getDataUltima() {
+        if(datas.isEmpty())
+            return null;
 
+        return datas.get(datas.size() -1).getData();
+    }
 }
