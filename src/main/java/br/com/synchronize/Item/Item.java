@@ -106,11 +106,13 @@ public class Item {
     @JoinColumn(name = "obra_id")
     private Obra obra;
 
-
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public String getDataUltima() {
+        if(datas.size() <= 0)
+            return null;
+
         return datas.get(datas.size() -1).getData();
     }
 
@@ -166,7 +168,7 @@ public class Item {
         this.dataFinal = null;
     }
 
-    public void addItemRelatorio(Double desenvolvimentoArea, Double desenvolvimentoPorcentagem, Double preparacaoDesenvolvimentoArea, Double preparacaoDesenvolvimentoPorcentagem, Double protecaoDesenvolvimentoArea, Double protecaoDesenvolvimentoPorcentagem) {
+    public ItemRelatorio addItemRelatorio(Double desenvolvimentoArea, Double desenvolvimentoPorcentagem, Double preparacaoDesenvolvimentoArea, Double preparacaoDesenvolvimentoPorcentagem, Double protecaoDesenvolvimentoArea, Double protecaoDesenvolvimentoPorcentagem) {
         ItemRelatorio itemRelatorio = new ItemRelatorio();
         itemRelatorio.setDesenvolvimentoArea(desenvolvimentoArea);
         itemRelatorio.setDesenvolvimentoPorcentagem(desenvolvimentoPorcentagem);
@@ -177,6 +179,8 @@ public class Item {
         itemRelatorio.setData();
 
         datas.add(itemRelatorio);
+
+        return itemRelatorio;
     }
 
     public void setDataFinal() {

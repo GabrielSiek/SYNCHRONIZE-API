@@ -2,6 +2,8 @@ package br.com.synchronize.Item;
 
 import br.com.synchronize.Categorias.Status;
 import br.com.synchronize.ItemRelatorio.ItemRelatorio;
+import br.com.synchronize.ItemRelatorio.ItemRelatorioDTO;
+import br.com.synchronize.ItemRelatorio.ItemRelatorioRepository;
 import br.com.synchronize.ItemRelatorio.ItemRelatorioService;
 import br.com.synchronize.Obra.ObraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,7 +24,7 @@ public class ItemController {
     ItemService itemService;
 
     @Autowired
-    ItemRelatorioService itemRelatorioService;
+    ItemRelatorioRepository itemRelatorioRepository;
 
     @Autowired
     ObraRepository obraRepository;
@@ -95,19 +98,29 @@ public class ItemController {
                 //atualizando valores
                 if(optionalItemRelatorio.isPresent()){
                     ItemRelatorio itemRelatorio = optionalItemRelatorio.get();
-                    itemRelatorio.setPreparacaoDesenvolvimentoArea(updateItemValoresDTO.preparacao_desenvolvimento_area());
+                    itemRelatorio.setPreparacaoDesenvolvimentoArea(preparacao_desenvolvimento_area);
+                    itemRelatorio.setPreparacaoDesenvolvimentoPorcentagem(preparacao_desenvolvimento_porcentagem);
+                    itemRelatorio.setProtecaoDesenvolvimentoArea(protecao_desenvolvimento_area);
+                    itemRelatorio.setProtecaoDesenvolvimentoPorcentagem(protecao_desenvolvimento_porcentagem);
+                    itemRelatorio.setDesenvolvimentoArea(desenvolvimento_area);
+                    itemRelatorio.setDesenvolvimentoPorcentagem(desenvolvimento_porcentagem);
 
+                    itemRelatorioRepository.save(itemRelatorio);
                 }
                 else {
-                    item.addItemRelatorio(
-                            updateItemValoresDTO.preparacao_desenvolvimento_area(),
-                            updateItemValoresDTO.preparacao_desenvolvimento_porcentagem(),
-                            updateItemValoresDTO.protecao_desenvolvimento_area(),
-                            updateItemValoresDTO.protecao_desenvolvimento_porcentagem(),
-                            updateItemValoresDTO.desenvolvimento_area(),
-                            updateItemValoresDTO.desenvolvimento_porcentagem()
+                    ItemRelatorio itemRelatorio = item.addItemRelatorio(
+                            preparacao_desenvolvimento_area,
+                            preparacao_desenvolvimento_porcentagem,
+                            protecao_desenvolvimento_area,
+                            protecao_desenvolvimento_porcentagem,
+                            desenvolvimento_area,
+                            desenvolvimento_porcentagem
                     );
+
+                    itemRelatorioRepository.save(itemRelatorio);
                 }
+
+                item.setStatus(status);
 
                 if (updateItemValoresDTO.status().equals(Status.CONCLUIDO))
                     item.setStatus(Status.CONCLUIDO);
@@ -115,7 +128,6 @@ public class ItemController {
                     item.setStatus(Status.NAO_CONCLUIDO);
 
                 item.setDataFinal();
-
 
                 itemRepository.save(item);
 
@@ -126,7 +138,6 @@ public class ItemController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item não encontrado pelo ID fornecido");
     }
-
 
     @DeleteMapping("/item/{item_id}/delete")
     public ResponseEntity deleteItem(@PathVariable String item_id) {

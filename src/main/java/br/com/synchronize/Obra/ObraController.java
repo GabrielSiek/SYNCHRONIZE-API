@@ -4,8 +4,8 @@ import br.com.synchronize.Categorias.Status;
 import br.com.synchronize.Empresa.Empresa;
 import br.com.synchronize.Empresa.EmpresaRepository;
 import br.com.synchronize.Item.Item;
-import br.com.synchronize.ItemRelatorio.ItemRelatorio;
 import br.com.synchronize.Item.ItemRepository;
+import br.com.synchronize.ItemRelatorio.ItemRelatorioDTO;
 import br.com.synchronize.User.User;
 import br.com.synchronize.User.UserRepository;
 import jakarta.validation.Valid;
@@ -16,12 +16,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @RestController
 
@@ -58,7 +59,6 @@ public class ObraController {
                 if (!registerObraDTO.items().isEmpty()) {
 
                     List<Item> items = registerObraDTO.items().stream().map(itemDTO -> {
-
                         Item item = new Item();
                         // Defina os atributos do item a partir do DTO
                         item.setNumero(itemDTO.getNumero());
@@ -120,14 +120,48 @@ public class ObraController {
                          if (obra.getEncarregado().getId().equals(user.getId()))
                              return obraService.obterPorId(obra_id);
                          else
-                            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Não autorizado: Você não tem permissão para acessar esta obra.");
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não autorizado: Você não tem permissão para acessar esta obra.");
                      }
                  }
              } else {
-                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Não autorizado: Você não tem permissão para acessar esta obra.");
+                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Não autorizado: Você não tem permissão para acessar esta obra.");
              }
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Obra não encontrada.");
+    }
+
+    @GetMapping("/obra/itens-relatorio/{obra_id}")
+    public List<ItemRelatorioDTO> getItemRelatorios(@PathVariable String obra_id, @RequestBody String data_inicio, @RequestBody String data_final) {
+        Optional<Obra> optionalObra = obraRepository.findById(obra_id);
+
+        if(optionalObra.isPresent()) {
+            List<Item> itens = optionalObra.get().getItens();
+            return itens.stream()
+                    .flatMap(item -> item.getDatas().stream()
+                            .map(data ->
+                                new ItemRelatorioDTO(
+                                        data.getId(),
+                                        data.getData(),
+                                        data.getPreparacaoDesenvolvimentoArea(),
+                                        data.getPreparacaoDesenvolvimentoPorcentagem(),
+                                        data.getProtecaoDesenvolvimentoArea(),
+                                        data.getProtecaoDesenvolvimentoPorcentagem(),
+                                        data.getDesenvolvimentoArea(),
+                                        data.getDesenvolvimentoPorcentagem())))
+                    .filter(dto -> {
+
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                        LocalDate data = LocalDate.parse(dto.data(), formatter);
+                        LocalDate start = LocalDate.of(Integer.valueOf(data_inicio.substring(6, 9)), Integer.valueOf(data_inicio.substring(3,4)), Integer.valueOf(data_inicio.substring(0,1)));
+                        LocalDate end = LocalDate.of(Integer.valueOf(data_final.substring(6, 9)), Integer.valueOf(data_final.substring(3,4)), Integer.valueOf(data_final.substring(0,1)));
+
+                        return (data.isEqual(start) || data.isAfter(start) &&
+                                data.isEqual(end) || data.isBefore(end));
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Obra não encontrada com ID fornecido");
     }
 
     @PutMapping("/obra/{obra_id}/update")

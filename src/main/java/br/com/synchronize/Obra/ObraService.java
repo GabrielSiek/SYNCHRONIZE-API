@@ -55,6 +55,9 @@ public class ObraService {
                                         item.getProtecaoDesenvolvimentoPorcentagem(),
                                         item.getDesenvolvimentoArea(),
                                         item.getDesenvolvimentoPorcentagem(),
+                                        item.getDataInicio(),
+                                        item.getDataUltima(),
+                                        item.getDataFinal(),
                                         item.getStatus()))
                                 .collect(Collectors.toList());
 
@@ -108,6 +111,9 @@ public class ObraService {
                             item.getProtecaoDesenvolvimentoPorcentagem(),
                             item.getDesenvolvimentoArea(),
                             item.getDesenvolvimentoPorcentagem(),
+                            item.getDataInicio(),
+                            item.getDataUltima(),
+                            item.getDataFinal(),
                             item.getStatus()))
                     .collect(Collectors.toList());
 
