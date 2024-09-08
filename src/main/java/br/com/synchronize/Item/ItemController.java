@@ -6,6 +6,7 @@ import br.com.synchronize.ItemRelatorio.ItemRelatorioDTO;
 import br.com.synchronize.ItemRelatorio.ItemRelatorioRepository;
 import br.com.synchronize.ItemRelatorio.ItemRelatorioService;
 import br.com.synchronize.Obra.ObraRepository;
+import jakarta.ws.rs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class ItemController {
 //    }
 
     @GetMapping("/item/{item_id}/info")
-    public ItemDTO getItem(@RequestBody String item_id) {
+    public ItemDTO getItem(@PathVariable String item_id) {
         ItemDTO item = itemService.obterPorId(item_id);
         if(item != null)
             return item;
