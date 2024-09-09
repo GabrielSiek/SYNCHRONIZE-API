@@ -12,4 +12,4 @@ EXPOSE 8080
 
 COPY --from=build target/Synchronize-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT [ "java", "-jar", "app.jar"]g
+ENTRYPOINT [ "java", "-jar", "app.jar"]
