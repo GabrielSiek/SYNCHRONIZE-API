@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,12 +34,13 @@ public class UserController {
 
     //arrumado e vai ser usado
     //create
-    @PostMapping("{empresa_id}/register-user")
-    public ResponseEntity registerWorker(@PathVariable String empresa_id, @RequestBody @Valid RegisterUserDTO registerUserDTO) {
+    @PostMapping("/register-user")
+    public ResponseEntity registerWorker(@RequestBody @Valid RegisterUserDTO registerUserDTO, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         if (this.userRepository.findByEmail(registerUserDTO.email()) != null)
             return ResponseEntity.badRequest().body("Usuário já cadastrado no sistema");
 
-        Optional<Empresa> optionalEmpresa = empresaRepository.findById(empresa_id);
+        Optional<Empresa> optionalEmpresa = empresaRepository.findById(user.getEmpresa().getId());
 
         if (optionalEmpresa.isPresent()) {
             Empresa empresa = optionalEmpresa.get();
@@ -54,7 +56,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar usuário: " + ex);
             }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa não cadastrada no sistema com id: " + empresa_id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa não cadastrada no sistema com id: " + user.getEmpresa().getId());
     }
 
     //arrumado e acho que é usado

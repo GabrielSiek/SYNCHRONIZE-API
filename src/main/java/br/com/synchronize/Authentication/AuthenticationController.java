@@ -4,6 +4,7 @@ import br.com.synchronize.Categorias.Role;
 import br.com.synchronize.Empresa.Empresa;
 import br.com.synchronize.Empresa.EmpresaRepository;
 import br.com.synchronize.Infra.Security.TokenService;
+import br.com.synchronize.User.RegisterFirstUserDTO;
 import br.com.synchronize.User.User;
 import br.com.synchronize.User.UserRepository;
 import jakarta.validation.Valid;
@@ -40,26 +41,24 @@ public class AuthenticationController {
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
-    //arrumar criar conta junto de empresa
-//    @PostMapping("/register")
-//    public ResponseEntity register(@RequestBody @Valid RegisterUserBossDTO registerUserBossDTO) {
-//        if (this.userRepository.findByEmail(registerUserBossDTO.email()) != null)
-//            return ResponseEntity.badRequest().body("Email já cadastrado no sistema");
-//
-//        String encryptedPassword = new BCryptPasswordEncoder().encode(registerUserBossDTO.password());
-//
-//        Empresa empresa = new Empresa(registerUserBossDTO.nome_empresa());
-//
-//        empresaRepository.save(empresa);
-//
-//        Role role = Role.ADMIN;
-//        User newUser = new User(registerUserBossDTO.email(), registerUserBossDTO.nome(), encryptedPassword, role, empresa);
-//
-//        userRepository.save(newUser);
-//
-//
-//        return ResponseEntity.ok().body("Usuário chefe cadastrado com sucesso!");
-//    }
+    @PostMapping("/register")
+    public ResponseEntity register(@RequestBody @Valid RegisterFirstUserDTO registerFirstUserDTO) {
+        if (this.userRepository.findByEmail(registerFirstUserDTO.email()) != null)
+            return ResponseEntity.badRequest().body("Email já cadastrado no sistema");
+
+        String encryptedPassword = new BCryptPasswordEncoder().encode(registerFirstUserDTO.password());
+
+        Empresa empresa = new Empresa(registerFirstUserDTO.empresa_nome());
+
+        empresaRepository.save(empresa);
+
+        Role role = Role.ADMIN;
+        User newUser = new User(registerFirstUserDTO.email(), registerFirstUserDTO.nome(), encryptedPassword, role, empresa);
+
+        userRepository.save(newUser);
+
+        return ResponseEntity.ok().body("Usuário chefe cadastrado com sucesso!");
+    }
 
         @GetMapping("/verify-token")
     public ResponseEntity verifyToken() {
