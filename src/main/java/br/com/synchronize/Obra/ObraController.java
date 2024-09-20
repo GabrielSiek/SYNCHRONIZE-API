@@ -62,24 +62,23 @@ public class ObraController {
 
                     List<Item> items = registerObraDTO.items().stream().map(itemDTO -> {
                         Item item = new Item();
-                        // Defina os atributos do item a partir do DTO
-                        item.setNumero(itemDTO.getNumero());
-                        item.setLocalDeAplicacao(itemDTO.getLocalDeAplicacao());
-                        item.setNome(itemDTO.getNome());
-                        item.setSistemas(itemDTO.getSistemas());
-                        item.setTipo(itemDTO.getTipo());
-                        item.setQuantidade(itemDTO.getQuantidade());
-                        item.setAreaTotal(itemDTO.getAreaTotal());
-                        item.setValor(itemDTO.getValor());
-                        item.setValorEtapa(itemDTO.getValorEtapa());
-                        item.setPreparacaoTipo(itemDTO.getPreparacaoTipo());
-                        item.setPreparacaoAreaTotal(itemDTO.getPreparacaoAreaTotal());
-                        item.setPreparacaoValor(itemDTO.getPreparacaoValor());
-                        item.setPreparacaoValorEtapa(itemDTO.getPreparacaoValorEtapa());
-                        item.setProtecaoTipo(itemDTO.getProtecaoTipo());
-                        item.setProtecaoAreaTotal(itemDTO.getProtecaoAreaTotal());
-                        item.setProtecaoValor(itemDTO.getProtecaoValor());
-                        item.setProtecaoValorEtapa(itemDTO.getProtecaoValorEtapa());
+                        item.setNumero(itemDTO.numero());
+                        item.setLocalDeAplicacao(itemDTO.local_de_aplicacao());
+                        item.setNome(itemDTO.nome());
+                        item.setSistemas(itemDTO.sistemas());
+                        item.setTipo(itemDTO.tipo());
+                        item.setQuantidade(itemDTO.quantidade());
+                        item.setAreaTotal(itemDTO.area_total());
+                        item.setValor(itemDTO.valor());
+                        item.setValorEtapa(itemDTO.valor_etapa());
+                        item.setPreparacaoTipo(itemDTO.preparacao_tipo());
+                        item.setPreparacaoAreaTotal(itemDTO.preparacao_area_total());
+                        item.setPreparacaoValor(itemDTO.preparacao_valor());
+                        item.setPreparacaoValorEtapa(itemDTO.preparacao_valor_etapa());
+                        item.setProtecaoTipo(itemDTO.protecao_tipo());
+                        item.setProtecaoAreaTotal(itemDTO.protecao_area_total());
+                        item.setProtecaoValor(itemDTO.protecao_valor());
+                        item.setProtecaoValorEtapa(itemDTO.protecao_valor_etapa());
                         item.setEmpresa(newObra.getEmpresa());
                         item.setStatus(Status.NAO_CONCLUIDO);
                         item.setPreparacaoDesenvolvimentoArea(0.0);
